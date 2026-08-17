@@ -76,4 +76,4 @@ Claude한테 "오늘 만든 프레임 노드 ID랑 요약 정리해줘" → 나�
 전체 목록: `02_to-be/problems.md`, 각 AS-IS 화면 옆 노란 "리뷰 메모"
 
 ## 6. Claude Code 쓰는 경우 (더 편함)
-이 프로젝트 폴더를 GitHub로 공유받아서 Claude Code로 열면 `CLAUDE.md`를 자동으로 읽어서 위 규칙을 다 알고 시작해요. 시작 프롬프트 없이 "02 화면 개선안 만들어줘"만 해도 됨. 가능하면 이 방식 추천.
+GitHub 레포 https://github.com/youngjun1227/supersol-insurance-redesign (초대 필요) 를 clone해서 Claude Code로 열면 `CLAUDE.md`를 자동으로 읽어서 위 규칙을 다 알고 시작해요. 시작 프롬프트 없이 "02 화면 개선안 만들어줘"만 해도 됨. 가능하면 이 방식 추천.
