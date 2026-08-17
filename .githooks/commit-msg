@@ -1,0 +1,13 @@
+#!/bin/sh
+# Claude/AI가 커밋 기여자로 남지 않도록 Co-Authored-By 트레일러와 생성 문구를 차단·제거
+MSG_FILE="$1"
+if grep -qiE '^(Co-Authored-By|Signed-off-by):.*(claude|anthropic|noreply@anthropic\.com)' "$MSG_FILE"; then
+  sed -i '' -E '/^(Co-Authored-By|Signed-off-by):.*(claude|anthropic|noreply@anthropic\.com)/Id' "$MSG_FILE"
+fi
+sed -i '' -E '/Generated with \[Claude Code\]/Id' "$MSG_FILE"
+# 그래도 남아있으면 커밋 거부
+if grep -qiE 'noreply@anthropic\.com|Co-Authored-By:.*Claude' "$MSG_FILE"; then
+  echo "❌ 커밋 메시지에 Claude 기여자 정보가 포함되어 있어 커밋을 거부합니다." >&2
+  exit 1
+fi
+exit 0

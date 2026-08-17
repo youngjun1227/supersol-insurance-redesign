@@ -9,6 +9,7 @@
 1. Figma 파일 첫 페이지 **📖 시작하기** 읽기 (5분)
 2. Claude로 작업할 거면 [docs/팀원용_Claude-Figma-작업-가이드.md](docs/팀원용_Claude-Figma-작업-가이드.md)
 3. Claude Code로 이 폴더를 열면 [CLAUDE.md](CLAUDE.md)의 규칙을 자동으로 읽습니다
+4. clone 후 한 번: `git config core.hooksPath .githooks` (AI 기여자 표기 차단 훅)
 
 ## 폴더
 | 폴더 | 내용 |

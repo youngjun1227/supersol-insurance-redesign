@@ -3,6 +3,7 @@
 ## 저장소
 - GitHub: https://github.com/youngjun1227/supersol-insurance-redesign (private, main 브랜치). 팀원은 collaborator로 초대받아 clone → Claude Code로 열면 이 파일을 자동으로 읽음.
 - 커밋은 사용자가 요청할 때. 캡처 PNG도 포함(총 ~13MB).
+- **커밋 메시지에 `Co-Authored-By: Claude …` / `Generated with Claude Code` 절대 넣지 말 것 (사용자 지시, 2026-08-17).** 이 레포는 사람만 기여자로 남긴다. `.claude/settings.json`의 `includeCoAuthoredBy:false` + `.githooks/commit-msg`가 강제함. clone한 팀원은 `git config core.hooksPath .githooks` 한 번 실행.
 
 ## 프로젝트 한 줄 요약
 신한라이프 슈퍼쏠(SOL) 앱의 **보험 탭만** 대상으로, 기존 컴포넌트 스타일은 유지한 채 **재배치·구조·흐름을 개선**하는 UI/UX 리디자인. 산출물은 Figma MCP로 제작.
