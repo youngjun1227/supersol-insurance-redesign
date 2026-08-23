@@ -1,0 +1,780 @@
+<title>슈퍼SOL 보험 디자인 가이드</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  /* ───────── 문서 틀 토큰 (라이트 기본) ───────── */
+  :root{
+    --paper:#FFFFFF; --ground:#F7F9FC; --ink:#101828; --ink-2:#344054; --muted:#667085;
+    --rule:#E4E7EB; --rule-soft:#EEF1F5; --accent:#005DF9; --accent-soft:#ECF0FE; --code-bg:#F0F4FA;
+    --good:#1B7F4D; --good-bg:#E9F6EF; --bad:#B42318; --bad-bg:#FBEAE7;
+    /* 제품 토큰 — 테마와 무관하게 고정 (미리보기는 실제 앱 값) */
+    --sol-primary:#005DF9; --sol-text:#101828; --sol-text2:#344054; --sol-text3:#475467; --sol-cap:#667085; --sol-dis:#818DA2;
+    --sol-page:#F0F4FA; --sol-surface:#FFFFFF; --sol-tint:#F4F6FE; --sol-tint2:#F8F9FC; --sol-track:#E3E7EE; --sol-chip:#344054;
+    --sol-iconbtn:#ECF0FE; --sol-border:#E4E7EB; --sol-border2:#EAECF0; --sol-strong:#182230; --sol-yellow:#FEB201; --sol-dim:rgba(16,24,40,.55);
+    --life-primary:#265BF0; --life-text:#111726; --life-body:#495365; --life-link:#3668F6;
+    --doc:"IBM Plex Sans KR","Noto Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --app:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#161C27; --ground:#0F141D; --ink:#E8ECF2; --ink-2:#C5CDD9; --muted:#8F9AAD;
+      --rule:#2A3442; --rule-soft:#222B38; --accent:#5B9BFF; --accent-soft:#1C2A44; --code-bg:#1C2430;
+      --good:#5CCB8A; --good-bg:#15291F; --bad:#F08A7D; --bad-bg:#3A1B18;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#161C27; --ground:#0F141D; --ink:#E8ECF2; --ink-2:#C5CDD9; --muted:#8F9AAD;
+    --rule:#2A3442; --rule-soft:#222B38; --accent:#5B9BFF; --accent-soft:#1C2A44; --code-bg:#1C2430;
+    --good:#5CCB8A; --good-bg:#15291F; --bad:#F08A7D; --bad-bg:#3A1B18;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--doc);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  code,.mono{font-family:var(--mono);font-size:.92em}
+  code{background:var(--code-bg);padding:.1em .4em;border-radius:4px;color:var(--ink-2)}
+  h1,h2,h3,h4{margin:0;line-height:1.25;text-wrap:balance;letter-spacing:-.01em}
+  h2{font-size:26px;font-weight:700}
+  h3{font-size:18px;font-weight:600}
+  h4{font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  p{margin:0}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{font-weight:600;color:var(--muted);font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
+  td.mono,th.mono{font-family:var(--mono);font-size:13px;white-space:nowrap}
+  .tbl{overflow-x:auto;border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
+  .tbl table{min-width:560px}
+  .tbl th{background:var(--ground)}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* ───────── 레이아웃 ───────── */
+  .shell{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;max-width:1180px;margin:0 auto;padding:40px 28px 120px}
+  nav.toc{position:sticky;top:28px;align-self:start;font-size:13.5px}
+  nav.toc .brand{font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  nav.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+  nav.toc a{display:block;padding:6px 10px;border-radius:8px;color:var(--ink-2)}
+  nav.toc a:hover{background:var(--paper)}
+  nav.toc .sub{padding-left:10px;color:var(--muted);font-size:12.5px}
+  main{display:flex;flex-direction:column;gap:72px;min-width:0}
+  section{display:flex;flex-direction:column;gap:22px;scroll-margin-top:24px}
+  .lede{color:var(--ink-2);max-width:62ch;font-size:16px}
+  .note{font-size:13.5px;color:var(--muted);max-width:70ch}
+  .callout{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+  .callout strong{color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr;gap:28px;padding:24px 18px 80px}
+    nav.toc{position:static}
+    nav.toc ol{flex-direction:row;flex-wrap:wrap;gap:6px}
+    nav.toc .sub{display:none}
+    nav.toc a{background:var(--paper);border:1px solid var(--rule)}
+  }
+
+  /* ───────── 머리 ───────── */
+  header.top{display:flex;flex-direction:column;gap:18px;padding-bottom:8px}
+  header.top h1{font-size:38px;font-weight:700;letter-spacing:-.02em}
+  header.top .meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted)}
+  .principle{font-size:22px;font-weight:600;line-height:1.4;max-width:30ch;padding:22px 26px;border-left:3px solid var(--accent);background:var(--paper);border-radius:0 12px 12px 0}
+  .why{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .why div{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;font-size:14px}
+  .why b{display:block;margin-bottom:6px;color:var(--ink)}
+
+  /* ───────── 스와치 ───────── */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .sw{background:var(--paper);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+  .sw .chip{height:58px;border-bottom:1px solid var(--rule)}
+  .sw .b{padding:9px 11px;font-size:12.5px;line-height:1.45}
+  .sw .b .n{font-family:var(--mono);color:var(--ink);font-size:12px}
+  .sw .b .h{font-family:var(--mono);color:var(--muted);font-size:11.5px}
+  .sw .b .u{color:var(--ink-2);margin-top:3px}
+  .sw.banned .chip{position:relative}
+  .sw.banned .chip::after{content:"쓰지 않음";position:absolute;right:8px;top:8px;font-size:11px;background:rgba(255,255,255,.9);color:var(--bad);padding:2px 7px;border-radius:999px;font-weight:600}
+
+  /* ───────── 타입 스케일 (제품 글꼴로 렌더) ───────── */
+  .type-row{display:grid;grid-template-columns:150px minmax(0,1fr) 200px;gap:16px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--rule)}
+  .type-row .k{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .type-row .s{font-family:var(--app);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .type-row .u{font-size:12.5px;color:var(--muted)}
+  @media (max-width:700px){.type-row{grid-template-columns:1fr;gap:4px}}
+
+  /* ───────── 스펙 블록 ───────── */
+  .specimen{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:26px;background:var(--paper);border:1px solid var(--rule);border-radius:16px;padding:22px}
+  @media (max-width:900px){.specimen{grid-template-columns:1fr}}
+  .specimen h3{margin-bottom:4px}
+  .specimen .id{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .specimen .spec{font-size:13.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:6px}
+  .specimen .spec dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:0}
+  .specimen .spec dt{color:var(--muted);font-size:12.5px}
+  .specimen .spec dd{margin:0;font-family:var(--mono);font-size:12.5px}
+  .why-box{font-size:13.5px;color:var(--ink-2);border-top:1px solid var(--rule-soft);padding-top:12px}
+  .why-box b{color:var(--ink)}
+  .dodont{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+  .dodont div{border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5}
+  .dodont .do{background:var(--good-bg);color:var(--ink)}
+  .dodont .dont{background:var(--bad-bg);color:var(--ink)}
+  .dodont b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+  .dodont .do b{color:var(--good)}
+  .dodont .dont b{color:var(--bad)}
+  @media (max-width:520px){.dodont{grid-template-columns:1fr}}
+
+  /* ───────── 미리보기 캔버스 — 앱 값 고정 ───────── */
+  .canvas{background:var(--sol-page);border-radius:14px;padding:20px;font-family:var(--app);color:var(--sol-text);display:flex;flex-direction:column;gap:14px;align-items:flex-start;line-height:1.4}
+  .canvas.white{background:var(--sol-surface);border:1px solid var(--rule)}
+  .canvas .lbl{font-family:var(--doc);font-size:11px;color:var(--sol-cap);letter-spacing:.04em;text-transform:uppercase;margin-top:4px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .w353{width:100%;max-width:353px}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:8px;font-size:16px;font-weight:700;border:0;font-family:var(--app);cursor:default;white-space:nowrap}
+  .btn.primary{background:var(--sol-primary);color:#fff}
+  .btn.xl{height:56px;border-radius:16px}
+  .btn.tint{background:var(--sol-iconbtn);color:var(--sol-primary);font-weight:500}
+  .btn.disabled{background:var(--sol-track);color:var(--sol-dis)}
+  .btn.outline{background:#fff;border:1px solid var(--life-link);color:var(--life-link);height:52px;border-radius:12px;font-weight:500}
+  .btn.full{width:100%}
+  .btn.half{flex:1}
+  .iconbtn{width:56px;height:60px;border-radius:12px;background:var(--sol-iconbtn);display:flex;align-items:center;justify-content:center}
+
+  .ph{background:#D5DAE3;border-radius:6px;flex:none}   /* 아이콘 플레이스홀더 */
+  .ph.r{border-radius:999px}
+  .chev{width:8px;height:8px;border-right:1.5px solid var(--sol-dis);border-bottom:1.5px solid var(--sol-dis);transform:rotate(-45deg);flex:none}
+  .chk{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--sol-border);background:#fff;flex:none;position:relative}
+  .chk.on{background:var(--sol-primary);border-color:var(--sol-primary)}
+  .chk.on::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg)}
+
+  .fchip{height:34px;padding:0 14px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;background:var(--sol-tint2);border:1px solid var(--sol-border);color:var(--sol-text2)}
+  .fchip.on{background:var(--sol-chip);border-color:var(--sol-chip);color:#fff}
+  .seg{width:100%;max-width:353px;height:48px;border-radius:12px;background:var(--sol-track);padding:4px;display:flex;gap:4px}
+  .seg div{flex:1;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:15px;font-weight:500;color:var(--sol-text3)}
+  .seg .on{background:#fff;color:var(--sol-text);font-weight:700}
+  .tabs{display:flex;gap:24px;padding:0 20px;height:46px;align-items:flex-end;width:100%;max-width:353px;border-bottom:1px solid var(--sol-border2)}
+  .tabs span{font-size:16px;font-weight:500;color:var(--sol-cap);padding-bottom:10px;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tabs .on{color:var(--sol-text);border-bottom-color:var(--sol-text);font-weight:700}
+  .tabbar{width:100%;max-width:363px;height:62px;border-radius:999px;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,.08);display:flex;justify-content:space-around;align-items:center;padding:0 10px}
+  .tabbar div{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--sol-dis)}
+  .tabbar .on{color:var(--sol-primary)}
+  .tabbar .on .ph{background:var(--sol-primary)}
+  .hdr{width:100%;max-width:353px;height:56px;display:flex;align-items:center;justify-content:space-between}
+  .hdr .t{font-size:24px;font-weight:700;color:#000}
+  .hdr.sub .t{font-size:20px;color:var(--sol-text);display:flex;align-items:center;gap:12px}
+  .back{width:10px;height:10px;border-left:2px solid var(--sol-text);border-bottom:2px solid var(--sol-text);transform:rotate(45deg);margin-left:4px}
+
+  .card{background:#fff;border-radius:24px;padding:20px;width:100%;max-width:369px;display:flex;flex-direction:column;gap:14px}
+  .card.product{border-radius:16px;border:1px solid var(--sol-border);max-width:353px}
+  .card .ttl{display:flex;justify-content:space-between;align-items:center;font-size:20px;font-weight:700}
+  .tintbox{background:var(--sol-tint);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;width:100%}
+  .tintbox .l{font-size:14px;font-weight:500;color:var(--sol-text2)}
+  .li{display:flex;align-items:center;gap:12px;height:60px;width:100%;max-width:353px}
+  .li .t{flex:1;font-size:16px;font-weight:500;color:var(--sol-text2)}
+  .li .s{display:block;font-size:14px;font-weight:400;color:var(--sol-cap);margin-top:2px}
+  .gi{display:flex;align-items:center;gap:12px;width:160px;height:56px}
+  .gi span{font-size:14px;color:var(--sol-text2)}
+  .badge{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid transparent}
+  .badge.own{background:var(--sol-primary);color:#fff}
+  .badge.other{border-color:var(--sol-border);color:var(--sol-text2);background:#fff}
+  .badge.lack{border-color:var(--sol-border);color:var(--sol-text3);background:#fff}
+  .badge.ok{background:var(--sol-primary);color:#fff}
+  .badge.step{background:var(--sol-dis);color:#fff}
+  .badge.red{background:#FEE4E2;color:#B42318}
+  .tg{width:51px;height:31px;border-radius:999px;background:var(--sol-track);position:relative;flex:none}
+  .tg::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+  .tg.on{background:var(--sol-primary)}
+  .tg.on::after{left:22px}
+  .split{display:flex;gap:8px;width:100%;max-width:353px}
+  .split div{flex:1;height:78px;border-radius:16px;background:var(--sol-tint);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:16px;font-weight:700}
+  .stat{display:flex;gap:24px}
+  .stat div{display:flex;flex-direction:column;gap:4px}
+  .stat .k{font-size:13px;color:var(--sol-cap)}
+  .stat .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+  .step{display:flex;gap:14px;align-items:flex-start;height:72px;width:100%;max-width:353px}
+  .step .n{width:28px;height:28px;border-radius:50%;background:var(--sol-iconbtn);color:var(--sol-text2);font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;flex:none}
+  .step .t{font-size:16px;font-weight:700}
+  .step .d{font-size:14px;color:var(--sol-cap);margin-top:2px}
+  .tip{position:relative;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--sol-text2)}
+  .tip .q{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--sol-dis);color:var(--sol-dis);font-size:11px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+  .bubble{background:var(--sol-chip);color:#fff;font-size:13px;padding:10px 12px;border-radius:8px;max-width:260px;line-height:1.45}
+  .diag{width:100%;max-width:353px;background:#fff;border:1px solid var(--sol-border);border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;gap:6px}
+  .diag .k{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--sol-cap)}
+  .diag .t{font-size:16px;font-weight:700;line-height:1.4}
+  .diag .s{font-size:13px;color:var(--sol-cap)}
+
+  /* 바텀시트 목업 */
+  .phone{width:100%;max-width:300px;aspect-ratio:300/560;border-radius:22px;background:var(--sol-page);position:relative;overflow:hidden;border:1px solid var(--rule)}
+  .phone .bg{position:absolute;inset:0;padding:18px 14px;display:flex;flex-direction:column;gap:10px}
+  .phone .bg .c{background:#fff;border-radius:16px;height:72px}
+  .phone .dim{position:absolute;inset:0;background:var(--sol-dim)}
+  .phone .sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;padding:14px 16px 18px;display:flex;flex-direction:column;gap:10px;align-items:center}
+  .phone .sheet .x{align-self:flex-end;width:20px;height:20px;border-radius:6px;background:#D5DAE3}
+  .phone .sheet .ill{width:64px;height:64px;border-radius:14px;background:var(--sol-tint2);border:1px solid var(--sol-border2)}
+  .phone .sheet .ti{font-size:15px;font-weight:700;text-align:center}
+  .phone .sheet .bo{font-size:11px;color:var(--sol-text2);text-align:center}
+  .phone .sheet .tb{width:100%;background:var(--sol-tint);border-radius:10px;padding:10px;font-size:10.5px;color:var(--sol-text2);display:flex;flex-direction:column;gap:6px}
+  .phone .sheet .tb div{display:flex;gap:8px;align-items:center}
+  .phone .sheet .tb .chk{width:14px;height:14px;border-radius:3px}
+  .phone .sheet .cta{width:100%;height:40px;border-radius:12px;background:var(--sol-primary);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .phone .sheet .ln{font-size:10px;color:var(--sol-cap);display:flex;gap:14px}
+
+  /* 라운드·간격 샘플 */
+  .radii{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .radii div{width:84px;height:64px;background:var(--sol-iconbtn);border:1px solid var(--sol-border);display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;font-family:var(--mono);font-size:11.5px;color:var(--sol-text3)}
+  .spaces{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+  .spaces div{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .spaces i{display:block;background:var(--accent);opacity:.85;border-radius:2px}
+
+  /* 절차 */
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:10px}
+  ol.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;font-size:14px}
+  ol.steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:var(--mono)}
+  ol.steps b{display:block;margin-bottom:2px;color:var(--ink)}
+
+  ul.ban{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px}
+  ul.ban li{background:var(--paper);border:1px solid var(--rule);border-left:3px solid var(--bad);border-radius:10px;padding:10px 14px;font-size:13.5px}
+  ul.check{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:10px 14px;font-size:14px}
+  ul.check input{margin-top:4px;accent-color:var(--accent)}
+  .decide{background:var(--paper);border:1px dashed var(--rule);border-radius:12px;padding:14px 16px;font-size:13.5px}
+  .decide b{color:var(--accent)}
+  footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--rule);padding-top:18px}
+</style>
+
+<div class="shell">
+<nav class="toc" aria-label="목차">
+  <div class="brand">SuperSOL · 보험 탭</div>
+  <ol>
+    <li><a href="#principle">원칙</a></li>
+    <li><a href="#boundary">유지 / 개선 경계</a></li>
+    <li><a href="#palette">기준 팔레트</a></li>
+    <li><a href="#color">색</a></li>
+    <li><a href="#type">글자</a></li>
+    <li><a href="#shape">라운드 · 크기 · 간격</a></li>
+    <li><a href="#components">컴포넌트</a></li>
+    <li class="sub"><a href="#c-button">버튼</a></li>
+    <li class="sub"><a href="#c-select">선택 (칩·세그먼트·탭)</a></li>
+    <li class="sub"><a href="#c-nav">헤더 · 탭바</a></li>
+    <li class="sub"><a href="#c-card">카드 · 리스트</a></li>
+    <li class="sub"><a href="#c-state">뱃지 · 토글 · 체크</a></li>
+    <li class="sub"><a href="#c-home">보험 메인 전용</a></li>
+    <li class="sub"><a href="#c-sheet">팝업 · 바텀시트</a></li>
+    <li class="sub"><a href="#c-flow">스텝퍼 · 툴팁 · 진단 행</a></li>
+    <li><a href="#assets">에셋</a></li>
+    <li><a href="#process">전환 절차</a></li>
+    <li><a href="#ban">하지 말 것</a></li>
+    <li><a href="#qa">검수</a></li>
+    <li><a href="#evidence">실측 근거</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<header class="top" id="principle">
+  <h1>슈퍼SOL 보험 디자인 가이드</h1>
+  <div class="meta">
+    <span>3단계 최종 UI 기준 문서 · 2026-08-23</span>
+    <span>원본 토큰 <code>00_reference/design-tokens/tokens.md</code></span>
+    <span>캡처 22장 픽셀 실측 반영</span>
+  </div>
+  <div class="principle">룩앤필은 슈퍼SOL 그대로.<br>우리가 바꾸는 것은 구조·배치·흐름이지 생김새가 아니다.</div>
+  <div class="why">
+    <div><b>측정 때문에</b>9/11 테스트는 기존 앱과 MVP를 같은 과제로 비교한다. 생김새까지 바뀌면 "예뻐서 이긴 건지 구조가 나아서 이긴 건지" 가를 수 없다.</div>
+    <div><b>도입 현실성</b>우리 안이 실제로 들어간다면 슈퍼SOL 디자인 시스템 안에서 구현된다. 새 스타일은 "예쁜 딴 앱"이 된다.</div>
+    <div><b>팀 여력</b>디자인 인원 3명 중 2명이 Figma 초보. 새 스타일을 만들 시간에 구조를 다듬는다.</div>
+  </div>
+  <p class="note">그래서 색·글자·라운드·버튼·여백은 전부 <strong>찾아서 그대로 쓰는 것</strong>이지 만드는 것이 아니다. 아래 미리보기는 전부 실제 앱 값으로 고정돼 있다 — 이 페이지를 다크 모드로 봐도 앱 색은 바뀌지 않는다.</p>
+</header>
+
+<!-- ───────── 경계 ───────── -->
+<section id="boundary">
+  <h2>유지 / 개선 경계</h2>
+  <div class="grid2">
+    <div class="callout">
+      <h4>그대로 유지 — 손대지 않음</h4>
+      <p>색 팔레트 · 버튼 높이·라운드·색 · 카드 라운드·패딩·테두리 · 폰트 크기 스케일과 굵기 · 아이콘 크기 · 여백 단위 · 상태바·헤더·상단 탭·하단 탭바</p>
+    </div>
+    <div class="callout">
+      <h4>우리가 바꾸는 것</h4>
+      <p>정보 구조와 화면 흐름 · 요소 배치·순서·우선순위·묶음 · 상태별(0건/보유) 노출 차이 · 문구(슈퍼SOL 어조 "~해요"체 유지) · 컴포넌트 <strong>조합</strong> — 새 컴포넌트는 기존 토큰으로만</p>
+    </div>
+  </div>
+  <div class="callout"><strong>회색 지대 판단 기준</strong><p>"이 요소를 슈퍼SOL 다른 탭(은행·카드)에 그대로 옮겨놔도 어색하지 않은가?" — 어색하면 우리가 만든 스타일이니 뺀다.</p></div>
+</section>
+
+<!-- ───────── 팔레트 ───────── -->
+<section id="palette">
+  <h2>기준 팔레트 = SOL 계열</h2>
+  <p class="lede">보험 영역 안에는 디자인 시스템이 <strong>두 개</strong> 섞여 있다 — 슈퍼SOL 본체(SOL 계열)와 신한라이프가 제공하는 화면(라이프 계열). 우리는 SOL 하나로 통일한다(R-01). 04 타사 목록·05 자사 상세를 SOL로 바꾸는 것 자체가 시안의 근거다.</p>
+  <div class="tbl"><table>
+    <tr><th></th><th>SOL 계열 — 기준</th><th>라이프 계열 — 쓰지 않음</th></tr>
+    <tr><td>Primary</td><td class="mono">#005DF9</td><td class="mono">#265BF0 · #3668F6</td></tr>
+    <tr><td>텍스트 최상위 / 본문</td><td class="mono">#101828 / #344054</td><td class="mono">#111726 / #495365</td></tr>
+    <tr><td>인라인 버튼</td><td>h48 · r8</td><td>h56 · r16 (인라인에도)</td></tr>
+    <tr><td>해당 화면</td><td>01 틀 · 02 · 03 · 06 · <strong>07 시작시트 · 07 1/5</strong></td><td>04 · 05 · <strong>07 청구 랜딩</strong> · 01 추천 카드</td></tr>
+  </table></div>
+  <div class="callout"><strong>8/23 픽셀 실측에서 드러난 것</strong><p>청구 <em>한 흐름</em> 안에서도 랜딩(07-1)은 라이프 계열(<code>#265BF0</code>·<code>#111726</code>), 바로 다음 시작시트(07-2)와 1/5(07-3)는 SOL(<code>#005DF9</code>·<code>#101828</code>)이다. 사용자는 버튼을 한 번 누를 때마다 파란색과 라운드가 바뀌는 앱을 쓰고 있다. 신한라이프 <strong>로고와 이름</strong>은 그대로 쓴다 — 바꾸는 건 토큰이지 브랜드 표기가 아니다.</p></div>
+</section>
+
+<!-- ───────── 색 ───────── -->
+<section id="color">
+  <h2>색</h2>
+  <p class="note">Figma <code>색상</code> 컬렉션 <strong>SOL 모드</strong> 값. 와이어프레임 모드에서 SOL 모드로 바꾸면 변수를 쓴 요소는 자동으로 바뀐다.</p>
+  <h4>브랜드 · 텍스트</h4>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#005DF9"></div><div class="b"><div class="n">primary/default</div><div class="h">#005DF9</div><div class="u">Primary 버튼 · 탭바 선택 · 링크 · 카운트 · 자사 뱃지 · 토글·체크 On</div></div></div>
+    <div class="sw"><div class="chip" style="background:#101828"></div><div class="b"><div class="n">text/primary</div><div class="h">#101828</div><div class="u">제목 · 선택된 탭 · 상품명 · 딤의 바탕색</div></div></div>
+    <div class="sw"><div class="chip" style="background:#344054"></div><div class="b"><div class="n">text/secondary</div><div class="h">#344054</div><div class="u">카드 제목 · 리스트 · 본문 · 칩 선택 배경 · 툴팁 배경</div></div></div>
+    <div class="sw"><div class="chip" style="background:#475467"></div><div class="b"><div class="n">text/tertiary</div><div class="h">#475467</div><div class="u">키-값 라벨 · 부족 뱃지 글자</div></div></div>
+    <div class="sw"><div class="chip" style="background:#667085"></div><div class="b"><div class="n">text/caption</div><div class="h">#667085</div><div class="u">부제 · 설명 · 한계 문구 · 비선택 탭</div></div></div>
+    <div class="sw"><div class="chip" style="background:#818DA2"></div><div class="b"><div class="n">text/disabled</div><div class="h">#818DA2</div><div class="u">탭바 비선택 · chevron · 단계 뱃지 배경</div></div></div>
+    <div class="sw"><div class="chip" style="background:#000"></div><div class="b"><div class="n">text/black</div><div class="h">#000000</div><div class="u">페이지 큰 제목("금융")만</div></div></div>
+    <div class="sw"><div class="chip" style="background:#FEB201"></div><div class="b"><div class="n">accent/yellow</div><div class="h">#FEB201</div><div class="u">스탯 아이콘 포인트만. 다른 데 쓰지 않음</div></div></div>
+  </div>
+  <h4>배경 · 면</h4>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#F0F4FA"></div><div class="b"><div class="n">bg/page</div><div class="h">#F0F4FA</div><div class="u">보험 메인·상품 탭 페이지 배경 (상단 그라데이션 #EDF1F8→)</div></div></div>
+    <div class="sw"><div class="chip" style="background:#FFFFFF;border-bottom:1px solid #E4E7EB"></div><div class="b"><div class="n">bg/surface</div><div class="h">#FFFFFF</div><div class="u">카드 · 탭바 · 시트 · 서브 화면 배경</div></div></div>
+    <div class="sw"><div class="chip" style="background:#F4F6FE"></div><div class="b"><div class="n">bg/tint</div><div class="h">#F4F6FE</div><div class="u">틴트 카드 · 안내 박스 · 서류 박스 · 2분할 버튼</div></div></div>
+    <div class="sw"><div class="chip" style="background:#F8F9FC"></div><div class="b"><div class="n">bg/tint-alt</div><div class="h">#F8F9FC</div><div class="u">칩 기본 · 빈 상태 박스 · 만기 배너 · 스텝 바</div></div></div>
+    <div class="sw"><div class="chip" style="background:#ECF0FE"></div><div class="b"><div class="n">bg/icon-btn</div><div class="h">#ECF0FE</div><div class="u"><strong>2차 버튼 배경</strong> · 아이콘 버튼 · 스텝퍼 번호 원</div></div></div>
+    <div class="sw"><div class="chip" style="background:#E3E7EE"></div><div class="b"><div class="n">bg/segment-track</div><div class="h">#E3E7EE</div><div class="u">세그먼트 트랙 · 토글 Off · 비활성 버튼</div></div></div>
+    <div class="sw"><div class="chip" style="background:#344054"></div><div class="b"><div class="n">bg/chip-selected</div><div class="h">#344054</div><div class="u">필터 칩 선택</div></div></div>
+    <div class="sw"><div class="chip" style="background:rgba(16,24,40,.55)"></div><div class="b"><div class="n">dim</div><div class="h">#101828 · 55%</div><div class="u">팝업·시트 뒤. 검정이 아니라 남색 — 실측</div></div></div>
+  </div>
+  <h4>선</h4>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#E4E7EB"></div><div class="b"><div class="n">border/default</div><div class="h">#E4E7EB</div><div class="u">카드 테두리 · 구분선 · 체크 Off · 타사 뱃지</div></div></div>
+    <div class="sw"><div class="chip" style="background:#EAECF0"></div><div class="b"><div class="n">border/light</div><div class="h">#EAECF0</div><div class="u">카테고리 아이콘 박스 · 옅은 선</div></div></div>
+    <div class="sw"><div class="chip" style="background:#182230"></div><div class="b"><div class="n">border/strong</div><div class="h">#182230</div><div class="u">키-값 표 상단 굵은 선</div></div></div>
+  </div>
+  <h4>쓰지 않는 색 — 라이프 계열</h4>
+  <div class="swatches">
+    <div class="sw banned"><div class="chip" style="background:#265BF0"></div><div class="b"><div class="n">primary/alt-신한라이프</div><div class="h">#265BF0</div><div class="u">05 CTA · 07 랜딩 버튼</div></div></div>
+    <div class="sw banned"><div class="chip" style="background:#3668F6"></div><div class="b"><div class="n">—</div><div class="h">#3668F6</div><div class="u">04 아웃라인 버튼 · 02 은행 탭 카운트</div></div></div>
+    <div class="sw banned"><div class="chip" style="background:#111726"></div><div class="b"><div class="n">—</div><div class="h">#111726</div><div class="u">라이프 제목 글자</div></div></div>
+    <div class="sw banned"><div class="chip" style="background:#495365"></div><div class="b"><div class="n">—</div><div class="h">#495365</div><div class="u">라이프 본문 글자</div></div></div>
+  </div>
+
+  <h3>상태 색 규칙 — 토큰 밖으로 나가지 않는다</h3>
+  <div class="canvas white">
+    <div class="row"><span class="fchip on"><i class="ph r" style="width:14px;height:14px;background:#fff;opacity:.5"></i>보장</span><span class="fchip"><i class="ph r" style="width:14px;height:14px"></i>저축 투자</span><span class="lbl">선택 / 비선택</span></div>
+    <div class="row"><span class="badge own">신한라이프</span><span class="badge other">A생명</span><span class="lbl">자사 / 타사</span></div>
+    <div class="row"><span class="badge lack">부족</span><span class="badge ok">충분</span><span class="badge red" style="text-decoration:line-through">부족</span><span class="lbl">부족 = 테두리만 · 충분 = 채움 · 빨강 금지</span></div>
+    <div class="row"><span class="tg on"></span><span class="tg"></span><span class="chk on"></span><span class="chk"></span><span class="lbl">토글 · 체크</span></div>
+    <div class="row"><span class="badge step">1 / 5</span><span class="btn disabled" style="height:40px;font-size:14px">다음</span><span class="lbl">단계 · 비활성</span></div>
+  </div>
+  <div class="dodont">
+    <div class="do"><b>하세요</b>부족을 테두리만 있는 중립 뱃지로. "정보를 준다"는 방향(아이디어 4 (가))에 맞고, 충분만 파랗게 채워 긍정을 강조한다.</div>
+    <div class="dont"><b>하지 마세요</b>부족을 빨강·주황으로. 가입 압박으로 읽힐 가능성이 있고, SOL 팔레트에 경고색이 없다 — 만들어 쓰는 순간 "딴 앱"이 된다.</div>
+  </div>
+</section>
+
+<!-- ───────── 글자 ───────── -->
+<section id="type">
+  <h2>글자</h2>
+  <p class="lede">Figma에서는 <strong>Noto Sans KR</strong> (Regular · Medium · Bold — Semi Bold 없음). 실제 앱 서체는 신한 전용으로 추정되며 이 환경에 없다. <strong>Inter는 한글 글리프가 없어 절대 금지.</strong> 아래 샘플은 모두 Noto Sans KR이다.</p>
+  <div>
+    <div class="type-row"><div class="k">display · 28 Bold</div><div class="s" style="font-size:28px;font-weight:700">아직 준비된 보험이 없어요</div><div class="u">상품 상세 상품명(06 실측 ≈30) · 온보딩 헤드라인</div></div>
+    <div class="type-row"><div class="k">h1 · 24 Bold</div><div class="s" style="font-size:24px;font-weight:700">금융 · 모든상품 · 치료받은 분을 선택해주세요</div><div class="u">페이지 제목 · 서브 화면 제목 (실측 24 — 01·02·07·1/5 전부)</div></div>
+    <div class="type-row"><div class="k">h2 · 20 Bold</div><div class="s" style="font-size:20px;font-weight:700">보장에너지 · 내 보험 · 보험금 청구를 시작할까요?</div><div class="u">섹션·카드 제목 · 현황 수치 · 시트 제목</div></div>
+    <div class="type-row"><div class="k">h3 · 18 Bold</div><div class="s" style="font-size:18px;font-weight:700">치료비 걱정은 덜고, 암 걱정은 멈추세요</div><div class="u">추천 카드 제목 · 묶음 제목</div></div>
+    <div class="type-row"><div class="k">body-lg · 16 Bold / Medium / Regular</div><div class="s" style="font-size:16px"><b>보험금 청구하기</b> · <span style="font-weight:500">은행 카드 증권 보험</span> · 본문 문장</div><div class="u">버튼 · 상단 탭 · 리스트 항목 · 상품명 · 스탯 값</div></div>
+    <div class="type-row"><div class="k">body · 15 Regular</div><div class="s" style="font-size:15px">한 달 내 만기 예정 계좌가 1개 있어요</div><div class="u">배너 문구 · 키-값 라벨 · 빈 상태 안내 · 틴트 버튼 글자</div></div>
+    <div class="type-row"><div class="k">body-sm · 14 Regular / Medium</div><div class="s" style="font-size:14px">매일 타는 대중교통 · 월 3,000원 · <span style="font-weight:500">청구하려면 이 서류가 필요해요</span></div><div class="u">상품 설명 · 서브텍스트 · 그리드 라벨(실측 15, 한 줄 맞춤으로 14) · 박스 라벨</div></div>
+    <div class="type-row"><div class="k">caption · 13 Regular / Medium</div><div class="s" style="font-size:13px">가입 보험 2건 · 20대 기준으로 보여드려요 · <span style="font-weight:500;color:#005DF9">기준 바꾸기</span></div><div class="u">부제 · 한계 문구 · "왜 보이는지" · 텍스트 링크 · 뱃지</div></div>
+    <div class="type-row"><div class="k">label · 12 Medium</div><div class="s" style="font-size:12px;font-weight:500">홈 · 금융 · 상품 · 혜택 · 주식</div><div class="u">하단 탭바 라벨 · 작은 뱃지</div></div>
+  </div>
+  <div class="dodont">
+    <div class="do"><b>하세요</b>13개 스타일 중 하나만. 크기가 애매하면 한 단계 큰 것을 고르고 굵기로 위계를 낸다.</div>
+    <div class="dont"><b>하지 마세요</b>17 · 19 · 22 같은 중간값 만들기. Figma에서 스타일을 해제하고 숫자를 직접 치는 것.</div>
+  </div>
+</section>
+
+<!-- ───────── 라운드·크기·간격 ───────── -->
+<section id="shape">
+  <h2>라운드 · 크기 · 간격</h2>
+  <h4>라운드 — 이 여섯 가지뿐</h4>
+  <div class="canvas white"><div class="radii">
+    <div style="border-radius:4px">4 체크</div>
+    <div style="border-radius:8px">8 버튼</div>
+    <div style="border-radius:12px">12 박스</div>
+    <div style="border-radius:16px">16 카드</div>
+    <div style="border-radius:24px">24 홈카드·시트</div>
+    <div style="border-radius:999px">pill 칩·탭바</div>
+  </div></div>
+  <div class="tbl"><table>
+    <tr><th>토큰</th><th>값</th><th>어디에</th><th>근거</th></tr>
+    <tr><td class="mono">radius/button</td><td class="num">8</td><td>인라인 Primary · 2분할 · 2차(틴트) 버튼</td><td>06 버튼 2개 실측 h48 r8</td></tr>
+    <tr><td class="mono">radius/button-lg</td><td class="num">16</td><td><strong>하단 고정 CTA만</strong></td><td>07 시작시트 CTA 실측 h56 r16 — SOL도 하단은 56·16</td></tr>
+    <tr><td class="mono">radius/card-sm</td><td class="num">12</td><td>안내 박스 · 접힘 행 · 카테고리 아이콘 박스 · 세그먼트</td><td>세그먼트 실측 r≈12</td></tr>
+    <tr><td class="mono">radius/card</td><td class="num">16</td><td>상품 카드 · 묶음 카드 · 시트 안 박스 · 2분할 버튼</td><td></td></tr>
+    <tr><td class="mono">radius/card-lg</td><td class="num">24</td><td>홈 큰 카드 · 바텀시트 상단 · 푸시 알림 카드</td><td>00·01 카드 실측 24~26, 시트 24</td></tr>
+    <tr><td class="mono">radius/pill</td><td class="num">999</td><td>필터 칩 · 하단 탭바 · 뱃지 · 토글</td><td></td></tr>
+  </table></div>
+
+  <h4>크기</h4>
+  <div class="tbl"><table>
+    <tr><th>무엇</th><th>값 (pt)</th><th>비고</th></tr>
+    <tr><td>화면</td><td class="num">393 × 852</td><td>iPhone 기준. 852 = 첫 뷰포트</td></tr>
+    <tr><td>상태바 / 헤더 / 상단 탭 행</td><td class="num">54 / 56 / 46</td><td>탭 언더라인 2px</td></tr>
+    <tr><td>Primary 버튼 인라인 / 하단 CTA</td><td class="num">48 / 56</td><td>2분할 카드형은 78</td></tr>
+    <tr><td>2차(틴트) 버튼</td><td class="num">48 인라인 / 56 하단</td><td>Primary와 같은 틀</td></tr>
+    <tr><td>필터 칩</td><td class="num">34</td><td>실측 (8/17 추정 36)</td></tr>
+    <tr><td>세그먼트</td><td class="num">48 · r12</td><td>실측 (8/17 추정 52·r16)</td></tr>
+    <tr><td>하단 탭바</td><td class="num">363 × 62</td><td>플로팅 pill, 좌우 15, 선택 원 22</td></tr>
+    <tr><td>아이콘</td><td class="num">24 · 32 · 44 · 64</td><td>인라인 · 리스트/그리드 · 카테고리 박스 · 스탯 원</td></tr>
+    <tr><td>리스트 행</td><td class="num">60 (서브텍스트 있으면 77)</td><td></td></tr>
+    <tr><td>토글 / 체크박스</td><td class="num">51×31 / 20</td><td></td></tr>
+  </table></div>
+
+  <h4>간격 — 4 · 8 · 12 · 16 · 20 · 24 · 32</h4>
+  <div class="canvas white"><div class="spaces">
+    <div><i style="width:4px;height:40px"></i>4</div><div><i style="width:8px;height:40px"></i>8</div><div><i style="width:12px;height:40px"></i>12</div>
+    <div><i style="width:16px;height:40px"></i>16</div><div><i style="width:20px;height:40px"></i>20</div><div><i style="width:24px;height:40px"></i>24</div><div><i style="width:32px;height:40px"></i>32</div>
+  </div></div>
+  <div class="tbl"><table>
+    <tr><th>어디</th><th>값</th></tr>
+    <tr><td>화면 좌우 여백</td><td><strong>20</strong> — 보험 메인 카드 영역은 <strong>12</strong>(카드 폭 369)</td></tr>
+    <tr><td>카드 내부 패딩 / 틴트 박스</td><td>20 / 14~16</td></tr>
+    <tr><td>카드 사이</td><td>12 (메인) · 16 (서브 화면)</td></tr>
+    <tr><td>버튼 2개 나란히</td><td>8</td></tr>
+    <tr><td>리스트 행 안 아이콘 ↔ 글자</td><td>12</td></tr>
+    <tr><td>하단 고정 CTA 영역</td><td>높이 102 → 본문 하단 여백 <strong>126</strong> 확보 (S5-A에서 가려졌던 실수)</td></tr>
+    <tr><td>탭바 위 콘텐츠 여백</td><td>90</td></tr>
+  </table></div>
+</section>
+
+<!-- ───────── 컴포넌트 ───────── -->
+<section id="components">
+  <h2>컴포넌트</h2>
+  <p class="lede">원본은 Figma <code>🧩 컴포넌트 · 토큰</code> 페이지 섹션 <code>9:2</code>(잠금). <strong>최종 UI에서도 인스턴스를 분리하지 않는다.</strong> 변형이 필요하면 원본에 variant를 추가한다. 아래 미리보기는 CSS로 다시 그린 것이라 Figma와 1px 단위로 같지는 않다 — 값은 같다.</p>
+
+  <!-- 버튼 -->
+  <div class="specimen" id="c-button">
+    <div class="canvas">
+      <div class="row w353"><span class="btn primary half">내 보험료 확인</span><span class="btn primary half">가입하기</span></div>
+      <span class="lbl">Primary 인라인 · 48 · r8 · gap 8 (06)</span>
+      <span class="btn primary xl full w353">보험금 청구하기</span>
+      <span class="lbl">Primary 하단 CTA · 56 · r16 (07 시작시트)</span>
+      <div class="row w353"><span class="btn tint half">보험금 처리현황</span><span class="btn primary half">보험금 청구</span></div>
+      <span class="lbl">2차(틴트) + Primary · 48 · r8</span>
+      <div class="row w353"><span class="iconbtn"><i class="ph" style="width:24px;height:24px"></i></span><span class="btn primary xl" style="flex:1">보험료 계산하기</span></div>
+      <span class="lbl">하단 고정 CTA — 아이콘 버튼 56×60 + 56</span>
+      <span class="btn disabled full w353">다음</span>
+      <span class="lbl">비활성</span>
+    </div>
+    <div>
+      <h3>버튼</h3>
+      <div class="id">버튼 10:10 · 하단 고정 CTA 15:75</div>
+      <div class="spec"><dl>
+        <dt>Primary 인라인</dt><dd>h48 · r8 · #005DF9 · 흰 16 Bold</dd>
+        <dt>Primary 하단 CTA</dt><dd>h56 · r16 · 폭 353</dd>
+        <dt>2차 (틴트)</dt><dd>h48/56 · bg #ECF0FE · 글자 primary 16 Medium</dd>
+        <dt>아이콘 버튼</dt><dd>56×60 · r12 · bg #ECF0FE</dd>
+        <dt>비활성</dt><dd>bg #E3E7EE · 글자 #818DA2</dd>
+      </dl></div>
+      <div class="why-box"><b>왜 두 높이인가.</b> 06 상세의 인라인 버튼 2개는 48·r8, 07 시작시트의 하단 CTA는 56·r16 — 둘 다 SOL 화면에서 실측한 값이다. 슈퍼SOL 자체가 <em>손 닿는 자리(하단 고정)</em>와 <em>콘텐츠 속 버튼</em>을 다르게 쓴다. <b>2차 버튼은 틴트 채움.</b> 00 홈의 "이체", 07 랜딩의 "처리현황·필요 서류 보기"가 전부 연파랑 채움 + 파란 글자다. 아웃라인은 04(라이프 화면)에만 나온다.</div>
+      <div class="dodont">
+        <div class="do"><b>하세요</b>화면당 Primary 하나. 보조 행동은 틴트. 하단 고정이면 56·r16, 콘텐츠 안이면 48·r8.</div>
+        <div class="dont"><b>하지 마세요</b>Primary 두 개 나란히(06의 실수를 재현하지 않는다) · 아웃라인 버튼 · 인라인에 r16.</div>
+      </div>
+      <div class="decide"><b>영준 할 일</b> 버튼 컴포넌트에 <code>Type=Tint</code> 변형 추가 → S3 상담 신청 · S6 내 보험료 확인 · S5-B 청구 화면 열기 · 07-1 처리현황의 Outline 인스턴스 교체. Outline은 AS-IS 04 재현용으로만 남긴다.</div>
+    </div>
+  </div>
+
+  <!-- 선택 -->
+  <div class="specimen" id="c-select">
+    <div class="canvas">
+      <div class="row"><span class="fchip on"><i class="ph r" style="width:14px;height:14px;background:#fff;opacity:.5"></i>보장</span><span class="fchip"><i class="ph r" style="width:14px;height:14px"></i>저축 투자</span><span class="fchip">암</span><span class="fchip">건강</span></div>
+      <span class="lbl">필터 칩 · 34 · pill</span>
+      <div class="seg"><div class="on">신한은행</div><div>신한라이프</div></div>
+      <span class="lbl">세그먼트 · 48 · r12 · 트랙 #E3E7EE</span>
+      <div class="tabs" style="background:#fff;border-radius:8px 8px 0 0"><span>은행</span><span>카드</span><span>증권</span><span class="on">보험</span></div>
+      <span class="lbl">상단 탭 · 46 · 언더라인 2</span>
+    </div>
+    <div>
+      <h3>선택 — 칩 · 세그먼트 · 탭</h3>
+      <div class="id">필터 칩 10:19 · 세그먼트 10:32 · 탭 아이템 12:9 · 상단 탭 행 12:74</div>
+      <div class="spec"><dl>
+        <dt>칩 선택</dt><dd>bg #344054 · 글자 흰 14 Medium</dd>
+        <dt>칩 기본</dt><dd>bg #F8F9FC · 테두리 #E4E7EB · 글자 #344054</dd>
+        <dt>세그먼트</dt><dd>h48 r12 · 트랙 #E3E7EE · 선택 흰 15 Bold</dd>
+        <dt>상단 탭</dt><dd>16 Medium · 선택 #101828 + 언더라인 2 · 기본 #667085</dd>
+      </dl></div>
+      <div class="why-box"><b>왜 세 가지가 따로 있나.</b> 슈퍼SOL은 같은 "고르기"를 자리에 따라 다르게 그린다 — 화면 최상단 영역 전환은 <em>탭</em>, 둘 중 하나는 <em>세그먼트</em>, 여러 개 중 복수/스티키는 <em>칩</em>. 우리 S2 세 안의 차이도 이 셋 중 무엇을 어디에 쓰느냐다.</div>
+      <div class="dodont">
+        <div class="do"><b>하세요</b>칩이 6개 넘으면 가로 스크롤 + 우측 펼침(∨) 고정 — AS-IS 03-1 구조.</div>
+        <div class="dont"><b>하지 마세요</b>선택 칩을 파란색 채움으로. 슈퍼SOL 칩 선택은 <em>다크 그레이</em>다. 파랑은 Primary 버튼·탭바에 남겨둔다.</div>
+      </div>
+      <div class="decide"><b>영준 할 일</b> 세그먼트 컴포넌트 52·r16 → <code>48·r12</code>로 수정 (실측).</div>
+    </div>
+  </div>
+
+  <!-- 헤더·탭바 -->
+  <div class="specimen" id="c-nav">
+    <div class="canvas">
+      <div class="hdr"><span class="t">금융</span><span class="row" style="gap:24px"><i class="ph" style="width:24px;height:24px"></i><i class="ph" style="width:24px;height:24px"></i></span></div>
+      <span class="lbl">제목형 헤더 · 56 · 24 Bold #000</span>
+      <div class="hdr sub"><span class="t"><i class="back"></i>보험금 청구</span><span class="row" style="gap:24px"><i class="ph" style="width:24px;height:24px"></i></span></div>
+      <span class="lbl">서브 헤더 · 뒤로 + 20 Bold</span>
+      <div class="tabbar">
+        <div><i class="ph" style="width:22px;height:22px"></i>홈</div><div class="on"><i class="ph r" style="width:22px;height:22px"></i>금융</div><div><i class="ph" style="width:22px;height:22px"></i>상품</div><div><i class="ph" style="width:22px;height:22px"></i>혜택</div><div><i class="ph" style="width:22px;height:22px"></i>주식</div>
+      </div>
+      <span class="lbl">하단 탭바 · 363×62 · pill · 선택 원 22</span>
+    </div>
+    <div>
+      <h3>헤더 · 하단 탭바</h3>
+      <div class="id">헤더 13:67 · 하단 탭바 15:74 (Selected=홈·금융·상품)</div>
+      <div class="spec"><dl>
+        <dt>제목형</dt><dd>h56 · 제목 24 Bold #000 · 우측 아이콘 24 × 2~3</dd>
+        <dt>서브형</dt><dd>뒤로 10×20 + 제목 20 Bold · 우측 홈 or X</dd>
+        <dt>탭바</dt><dd>363×62 · 흰 · 그림자 0 4 16 8% · 선택: 원 22 primary + 라벨 12 primary</dd>
+      </dl></div>
+      <div class="why-box"><b>탭바는 화면 안에 떠 있다.</b> 바닥에 붙은 바가 아니라 좌우 15 띄운 pill이라, 콘텐츠가 그 밑으로 지나간다. 그래서 모든 스크롤 화면은 바닥에 <em>90 여백</em>이 필요하다 — 안 두면 마지막 항목이 탭바에 가린다(S1-9 2분할이 y=712에서 가렸던 이유).</div>
+      <div class="dodont">
+        <div class="do"><b>하세요</b>서브 화면 우측 아이콘은 AS-IS대로 — 07은 홈 하나, 1/5는 X 하나.</div>
+        <div class="dont"><b>하지 마세요</b>헤더에 제목 없이 아이콘만 · 탭바 아이콘을 색으로 채우기(선택만 원으로).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 카드·리스트 -->
+  <div class="specimen" id="c-card">
+    <div class="canvas">
+      <div class="card"><div class="ttl">내 보험<span class="chev"></span></div><div class="stat"><div><span class="k">보험</span><span class="v">2건</span></div><div><span class="k">이번 달 보험료</span><span class="v">35,000원</span></div></div></div>
+      <span class="lbl">홈 카드 · 369 · r24 · 흰 · p20</span>
+      <div class="card product"><div style="font-size:16px;font-weight:700">신한케어받는암보험(무배당, 갱신형)</div><div style="font-size:14px;color:#667085">치료비 걱정은 덜고, 암 걱정은 멈추세요</div></div>
+      <span class="lbl">상품 카드 · 353 · r16 · 테두리</span>
+      <div class="tintbox w353"><span class="l">청구하려면 이 서류가 필요해요</span><div class="row"><span class="chk"></span><span style="font-size:16px">진료비 계산서·영수증</span></div><div class="row"><span class="chk"></span><span style="font-size:16px">진료비 세부내역서</span></div></div>
+      <span class="lbl">틴트 박스 · r12 · #F4F6FE</span>
+      <div class="li" style="background:#fff;border-radius:12px;padding:0 16px"><i class="ph" style="width:32px;height:32px"></i><span class="t">신한SOL대중교통보험 mini<span class="s">매일 타는 대중교통 · 월 3,000원</span></span><span class="chev"></span></div>
+      <span class="lbl">리스트 아이템 · 60/77 · 아이콘 32</span>
+      <div class="row" style="background:#fff;border-radius:12px;padding:8px 16px"><div class="gi"><i class="ph" style="width:32px;height:32px"></i><span>보험계약조회</span></div><div class="gi"><i class="ph" style="width:32px;height:32px"></i><span>자동이체등록/변경</span></div></div>
+      <span class="lbl">그리드 메뉴 아이템 · 라벨 14</span>
+    </div>
+    <div>
+      <h3>카드 · 리스트</h3>
+      <div class="id">섹션 카드 130:86 · 상품 카드 20:76 · 리스트 아이템 16:70 · 그리드 메뉴 아이템 20:77 · 현황 카드 50:75</div>
+      <div class="spec"><dl>
+        <dt>홈 카드</dt><dd>폭 369 · r24 · 흰 · p20 · 제목 20B + chevron</dd>
+        <dt>상품 카드</dt><dd>폭 353 · r16 · 테두리 #E4E7EB · p20</dd>
+        <dt>틴트 박스</dt><dd>r12 · #F4F6FE · p14~16 · 라벨 14M</dd>
+        <dt>리스트</dt><dd>h60/77 · 아이콘 32 · 16M #344054 · 서브 14R · chevron #818DA2</dd>
+        <dt>그리드</dt><dd>아이콘 32 + 라벨 14R (실측 15, 긴 이름 한 줄 맞춤)</dd>
+      </dl></div>
+      <div class="why-box"><b>카드 두 종류.</b> 보험 메인(01)의 큰 카드는 r24·테두리 없음·좌우 12, 상품 목록(04·06)의 카드는 r16·테두리·좌우 20. 같은 "카드"지만 자리가 다르다. S1은 전자, S2·S6은 후자.</div>
+      <div class="dodont">
+        <div class="do"><b>하세요</b>카드 안 위계는 제목 20B → 본문 16 → 보조 14 → 캡션 13. 한 카드에 제목은 하나.</div>
+        <div class="dont"><b>하지 마세요</b>카드 안에 카드(r16 안에 r16) · 흰 카드에 테두리와 그림자 동시에 · 카드 제목 두 줄.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 뱃지·토글·체크 -->
+  <div class="specimen" id="c-state">
+    <div class="canvas white">
+      <div class="row"><span class="badge own">신한라이프</span><span class="badge other">A생명</span><span class="badge other">부모가 들어준 보험</span></div>
+      <span class="lbl">판매사 · 정보 뱃지 · 24 · pill · 12M</span>
+      <div class="row"><span class="badge lack">부족</span><span class="badge ok">충분</span><span class="badge step">1 / 5</span></div>
+      <span class="lbl">판정 · 단계</span>
+      <div class="row"><span class="tg on"></span><span class="tg"></span></div>
+      <span class="lbl">토글 51×31</span>
+      <div class="row"><span class="chk on"></span><span class="chk"></span></div>
+      <span class="lbl">체크 20 · r4</span>
+    </div>
+    <div>
+      <h3>뱃지 · 토글 · 체크</h3>
+      <div class="id">뱃지 10:20 · 판매사 뱃지 49:62 · 토글 49:74 · 체크리스트 항목 49:82</div>
+      <div class="spec"><dl>
+        <dt>자사 / 타사</dt><dd>primary 채움 흰 / 테두리 #E4E7EB 글자 #344054</dd>
+        <dt>부족 / 충분</dt><dd>테두리 #E4E7EB 글자 #475467 / primary 채움 흰</dd>
+        <dt>단계</dt><dd>#818DA2 채움 흰 (1/5 실측)</dd>
+        <dt>토글</dt><dd>On primary / Off #E3E7EE</dd>
+        <dt>체크</dt><dd>On primary 채움 + 흰 체크 / Off 테두리 1.5 #E4E7EB</dd>
+      </dl></div>
+      <div class="why-box"><b>뱃지 색이 세 가지뿐인 이유.</b> SOL 팔레트에 의미색(빨강·초록·주황)이 없다. 그래서 뱃지는 <em>채움(파랑) / 테두리(중립) / 회색 채움(진행)</em> 셋으로만 상태를 말한다. 이게 부족해 보여도 색을 추가하지 않는다 — 추가하는 순간 슈퍼SOL이 아니다.</div>
+      <div class="dodont">
+        <div class="do"><b>하세요</b>한 화면에 파란 채움 뱃지는 긍정 하나에만(충분 또는 자사).</div>
+        <div class="dont"><b>하지 마세요</b>뱃지에 아이콘 넣기 · 뱃지를 버튼처럼 쓰기 · 부족에 빨강.</div>
+      </div>
+      <div class="decide"><b>8/25 팀 판단</b> 서류 목록의 체크박스 vs 불릿 — 체크박스는 "사용자가 체크한다"로 읽힌다. 지금은 체크리스트 컴포넌트 그대로.</div>
+    </div>
+  </div>
+
+  <!-- 보험 메인 전용 -->
+  <div class="specimen" id="c-home">
+    <div class="canvas">
+      <div class="card"><div class="ttl">내 보험<span class="chev"></span></div><div class="stat"><div><span class="k">보험</span><span class="v">2건</span></div><div><span class="k">이번 달 보험료</span><span class="v">35,000원</span></div></div><div style="height:1px;background:#EAECF0"></div><div class="li" style="height:auto;max-width:none"><i class="ph" style="width:32px;height:32px"></i><span class="t"><span class="badge other" style="margin-bottom:4px">부모가 들어준 보험</span><br>신한통합건강보험 원(ONE)Core<span class="s">2018.04 가입 · 월 32,000원</span></span><span class="chev"></span></div></div>
+      <span class="lbl">현황 + 목록 한 카드 (S1-9 안②)</span>
+      <div class="split"><div><i class="ph" style="width:24px;height:24px"></i>보험금 청구</div><div><i class="ph" style="width:24px;height:24px"></i>보험 찾기</div></div>
+      <span class="lbl">2분할 버튼 · 2×173×78 · r16 · 틴트</span>
+      <div class="row w353" style="justify-content:space-between;padding:0 8px"><span style="font-size:13px;color:#667085">가입 보험 2건 · 20대 기준으로 보여드려요</span><span style="font-size:13px;font-weight:500;color:#005DF9;white-space:nowrap">기준 바꾸기 &gt;</span></div>
+      <span class="lbl">"왜 보이는지" 한 줄 — 4장 전부 필수</span>
+    </div>
+    <div>
+      <h3>보험 메인 전용</h3>
+      <div class="id">현황 카드 50:75 · 2분할 버튼 50:76 · 맞춤 카드 50:99</div>
+      <div class="spec"><dl>
+        <dt>현황 카드</dt><dd>r24 · 제목 20B + chevron · 수치 라벨 13 / 값 20B tabular</dd>
+        <dt>2분할</dt><dd>173×78 × 2 · r16 · bg #F4F6FE · 아이콘 24 + 16B · gap 8</dd>
+        <dt>왜 보이는지</dt><dd>13R #667085 + 링크 13M primary · 보유 기준을 앞에</dd>
+      </dl></div>
+      <div class="why-box"><b>2분할 라벨이 상태마다 다르다.</b> 0건이면 [보장 진단 | 보험 찾기], 보유면 [내 보험 | 보험금 청구]. 0건 사용자에게 청구 버튼은 누를 이유가 없다. <b>"왜 보이는지"는 장식이 아니다</b> — 선별 기준 공개 요구 69.8%, 20대 36.1%가 개인화를 망설인다(KISDI 2025). 빠지면 "맘대로 골라 보여주는 화면"이 된다.</div>
+      <div class="dodont">
+        <div class="do"><b>하세요</b>현황 수치는 tabular-nums. "35,000원"이 정답값(테스트 과제)이니 첫 뷰포트 안에.</div>
+        <div class="dont"><b>하지 마세요</b>"내 보험" 헤더가 두 카드에 연달아(S1-9 합친 이유) · 2분할을 Primary 파랑 채움으로.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 시트 -->
+  <div class="specimen" id="c-sheet">
+    <div class="canvas" style="align-items:center">
+      <div class="phone">
+        <div class="bg"><div style="height:18px"></div><div class="c"></div><div class="c"></div><div class="c"></div></div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <span class="x"></span><span class="ill"></span>
+          <span class="ti">이 진료비, 보험금 청구할 수 있어요</span>
+          <span class="bo">8월 17일 ○○내과의원 32,000원 결제</span>
+          <div class="tb"><span style="font-weight:500">청구하려면 이 서류가 필요해요</span><div><span class="chk"></span>진료비 계산서·영수증</div><div><span class="chk"></span>진료비 세부내역서</div></div>
+          <span class="cta">보험금 청구하기</span>
+          <span class="ln"><span>나중에 하기</span><span>이 알림 받지 않기</span></span>
+        </div>
+      </div>
+      <span class="lbl">바텀시트 · 딤 #101828 55% · 상단 r24 (S4-A)</span>
+    </div>
+    <div>
+      <h3>팝업 · 바텀시트</h3>
+      <div class="id">팝업 · 바텀시트 52:88 (Type=하단 시트 / 중앙 팝업) · 템플릿 C 52:871</div>
+      <div class="spec"><dl>
+        <dt>딤</dt><dd>#101828 55% (실측 — 흰 위 #6D7077)</dd>
+        <dt>시트</dt><dd>흰 · 상단 r24 · p16/32 · 손잡이 없음</dd>
+        <dt>구성</dt><dd>X 24 우상단 → 일러스트 96 → 제목 20B 중앙 → 본문 15R 중앙 → 틴트 박스 → CTA 56·r16 → 보조 링크 13</dd>
+      </dl></div>
+      <div class="why-box"><b>AS-IS 07-2 시작시트 구조를 그대로 썼다.</b> 슈퍼SOL 사용자가 이미 아는 시트(X · 일러스트 · 제목 · 회색 박스 · 풀버튼)에 내용만 바꿔 넣었다. 새 팝업 양식을 학습시키지 않는다. 딤이 검정이 아니라 남색인 것도 실측 — 슈퍼SOL은 오버레이에도 브랜드 톤을 쓴다.</div>
+      <div class="dodont">
+        <div class="do"><b>하세요</b>시트는 내용만큼만 높이. 서류가 이 진료 건에 해당 없으면(진단서) 빼서 줄인다.</div>
+        <div class="dont"><b>하지 마세요</b>드래그 손잡이 추가(슈퍼SOL 시트엔 없다) · 시트 안에 Primary 둘 · 딤을 검정 50%로.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 스텝퍼·툴팁·진단 -->
+  <div class="specimen" id="c-flow">
+    <div class="canvas white">
+      <div class="step"><span class="n">1</span><div><div class="t">서류 준비</div><div class="d">영수증·세부내역서를 사진으로 찍어두세요</div></div></div>
+      <div class="step"><span class="n">2</span><div><div class="t">청구 정보 입력</div><div class="d">진료받은 사람과 병원, 금액을 확인해요</div></div></div>
+      <span class="lbl">절차 스텝퍼 · 행 72 · 번호 원 28</span>
+      <div class="row" style="align-items:flex-start;flex-direction:column;gap:8px"><span class="tip">무배당 <span class="q">?</span></span><span class="bubble">배당금을 주지 않는 대신 보험료가 저렴한 상품이에요</span></div>
+      <span class="lbl">용어 툴팁 · 말풍선 #344054 · 13 · r8 · 오버레이</span>
+      <div class="diag"><div class="k"><span>암 진단</span><span class="badge lack">부족</span></div><div class="t">또래보다 2,000만원 적게<br>준비돼 있어요</div><div class="s">내 보장 1,000만원 · 또래 평균 3,000만원</div></div>
+      <span class="lbl">진단 항목 행 · 문장 인사이트형 (S3-A)</span>
+    </div>
+    <div>
+      <h3>스텝퍼 · 툴팁 · 진단 행</h3>
+      <div class="id">절차 스텝퍼 52:89 · 용어 툴팁 49:63 · 진단 항목 행 50:116</div>
+      <div class="spec"><dl>
+        <dt>스텝퍼</dt><dd>번호 원 28 bg #ECF0FE 14M · 단계명 16B · 설명 14R caption · 행 72</dd>
+        <dt>툴팁</dt><dd>? 16 #818DA2 · 말풍선 #344054 흰 13R r8 p10/12 · 콘텐츠를 밀지 않음</dd>
+        <dt>진단 행</dt><dd>항목 14 caption · 문장 16B · 수치 13 caption · 뱃지 우상단</dd>
+      </dl></div>
+      <div class="why-box"><b>스텝퍼에 "현재 단계"가 없다.</b> 이건 진행 표시가 아니라 <em>시작 전 안내</em>다(S4-D). 그래서 번호 원이 전부 같은 연파랑이다. <b>진단 행은 문장이 주인공.</b> 실물 결과 화면에 수치 목록이 이미 있다(R-16) — 우리 차별점은 "또래보다 얼마나"라는 문장과 판정 뱃지, 한계 문구, 비권유 프레이밍이다. 수치는 보조 줄로 내려간다.</div>
+      <div class="dodont">
+        <div class="do"><b>하세요</b>툴팁은 한 화면에 열린 것 하나. 말풍선은 앵커 아래, 콘텐츠 위에 떠서.</div>
+        <div class="dont"><b>하지 마세요</b>진단 행마다 "상품 보러 가기" 달기 — 가입 유도 화면이 된다. 상담 버튼은 맨 아래 하나, 틴트.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── 에셋 ───────── -->
+<section id="assets">
+  <h2>에셋</h2>
+  <p class="lede">실제 앱의 아이콘·3D 일러스트는 <strong>추출·복제하지 않는다</strong>. 대신 아래 방침으로 간다 — 전부 팀장 결정이 필요한 기본값이다.</p>
+  <div class="tbl"><table>
+    <tr><th>에셋</th><th>방침</th><th>이유</th></tr>
+    <tr><td>UI 아이콘 (뒤로·검색·홈·chevron·체크·탭바 5개)</td><td><strong>Lucide</strong>(MIT) 24px · stroke 1.5 · 색 #818DA2 또는 primary</td><td>세트 하나면 일관. 슈퍼SOL 아이콘과 "같지는 않지만 같은 결"</td></tr>
+    <tr><td>서비스 아이콘 (12개) · 카테고리 (9개)</td><td>같은 세트에서 의미 맞는 것. 없으면 첫 글자 원형 배지 (bg #F4F6FE · 글자 primary)</td><td>실제는 컬러 일러스트 아이콘 — 제작 불가</td></tr>
+    <tr><td>3D 일러스트 (배터리 · 추천 카드 · 팝업 문서)</td><td><strong>단순 도형 플레이스홀더 유지</strong> — bg #F8F9FC 위에 라인 아이콘 48</td><td>측정 대상이 아님. 어설픈 3D 대체물이 오히려 "딴 앱"을 만든다</td></tr>
+    <tr><td>로고</td><td>신한라이프·신한은행·신한카드 실제 / 타사는 "A생명" 텍스트 뱃지</td><td>mock-data 표기 방침</td></tr>
+    <tr><td>푸시 · 카톡</td><td>실물 모사 — iOS 알림 카드 · 카카오 노랑 #FAE100</td><td>플랫폼 표현이라 우리 토큰 밖, 예외</td></tr>
+    <tr><td>React MVP 글꼴</td><td>Pretendard 웹폰트</td><td>Figma(Noto Sans KR)와 달라지지만 스케일·굵기가 같으면 테스트에 영향 없음</td></tr>
+  </table></div>
+</section>
+
+<!-- ───────── 절차 ───────── -->
+<section id="process">
+  <h2>와이어프레임 → 최종 UI 전환 절차</h2>
+  <p class="note">화면 한 장 기준. 순서대로. 테스트 과제에 걸린 화면부터 — S1(보험료 확인) → S4·S5(청구) → S3(보장) → S2(찾기) → S6.</p>
+  <ol class="steps">
+    <li><div><b>복제</b><code>시안</code> 페이지에서 <code>최종 UI 디자인</code> 페이지(5:4)로 복제. 원본은 남긴다 — 8/25 대조용.</div></li>
+    <li><div><b>변수 모드 전환</b>프레임 선택 → 우측 패널 레이어 섹션 → <code>색상</code> 컬렉션 모드 와이어프레임 → <strong>SOL</strong>. 변수를 쓴 요소는 전부 자동으로 바뀐다. 안 바뀌는 것 = 변수를 안 쓴 것 → 찾아서 바인딩.</div></li>
+    <li><div><b>텍스트 스타일 확인</b>이미 적용돼 있다. 건드리지 않는다.</div></li>
+    <li><div><b>플레이스홀더 교체</b>아이콘 플레이스홀더 → 에셋 방침의 아이콘 / 이미지 플레이스홀더 → 일러스트 방침. 회색 박스가 남으면 안 된다.</div></li>
+    <li><div><b>회색조 전용 표현 정리</b>점선 슬롯 테두리 제거 · "1st 뷰포트 접힘선" 레이어 숨김 · 노트 프레임은 화면 밖 유지.</div></li>
+    <li><div><b>상태 색 적용</b>선택/비선택 · 부족/충분 · 토글 — 위 상태 색 규칙.</div></li>
+    <li><div><b>프레임 이름</b><code>[아이디어 N]</code> 태그 유지. "개선안" 글자는 8/25 전에 쓰지 않는다.</div></li>
+    <li><div><b>검수 → 기록</b>아래 체크리스트 통과 후 <code>03_final-ui/figma-links.md</code>에 노드 ID.</div></li>
+  </ol>
+</section>
+
+<!-- ───────── 금지 ───────── -->
+<section id="ban">
+  <h2>하지 말 것</h2>
+  <ul class="ban">
+    <li>토큰에 없는 색 만들기 — 연한 파랑 하나 더, 회색 하나 더. 없으면 가장 가까운 토큰, 아니면 변수 추가 요청</li>
+    <li>그라데이션·그림자 임의 추가 — 그림자는 탭바·푸시 배너·시트에만</li>
+    <li>r4·8·12·16·24·pill 외 라운드</li>
+    <li>Noto Sans KR 외 폰트. <strong>Inter 절대 금지</strong></li>
+    <li>라이프 계열 색 #265BF0 · #3668F6 · #111726 · #495365</li>
+    <li>빨강·주황으로 "부족" 강조</li>
+    <li>아웃라인 버튼 — 2차 버튼은 틴트 채움</li>
+    <li>실제 앱 아이콘·일러스트 추출</li>
+    <li>인스턴스 분리(detach)</li>
+    <li>"개선안"·"솔루션"·팀명 글자 (8/25 전) · 회사 관점 문구("노출 증대")</li>
+  </ul>
+</section>
+
+<!-- ───────── 검수 ───────── -->
+<section id="qa">
+  <h2>검수 — 화면 한 장마다</h2>
+  <ul class="check">
+    <li><input type="checkbox" id="q1"><label for="q1">변수 모드 SOL — 회색조 잔재 0</label></li>
+    <li><input type="checkbox" id="q2"><label for="q2">토큰 외 색 0 (우측 "선택 색상" 패널에 변수 아닌 hex가 보이면 안 됨)</label></li>
+    <li><input type="checkbox" id="q3"><label for="q3">라운드가 4·8·12·16·24·pill 중 하나</label></li>
+    <li><input type="checkbox" id="q4"><label for="q4">텍스트가 13개 스타일 중 하나 — 스타일 해제된 텍스트 0</label></li>
+    <li><input type="checkbox" id="q5"><label for="q5">플레이스홀더 박스 0 — 아이콘·이미지 전부 교체</label></li>
+    <li><input type="checkbox" id="q6"><label for="q6">인스턴스 분리 0</label></li>
+    <li><input type="checkbox" id="q7"><label for="q7">#265BF0 계열 0 · 아웃라인 버튼 0</label></li>
+    <li><input type="checkbox" id="q8"><label for="q8">프레임 이름에 [아이디어 N], "개선안" 없음</label></li>
+    <li><input type="checkbox" id="q9"><label for="q9">첫 뷰포트(852) 안에 핵심 행동 — S1 2분할 · S2 상품 3개 · S3 첫 항목 · S4 서류 박스</label></li>
+    <li><input type="checkbox" id="q10"><label for="q10">목데이터 값 일치 — 김신한 · 35,000원 · 32,000원 · 가명</label></li>
+  </ul>
+</section>
+
+<!-- ───────── 근거 ───────── -->
+<section id="evidence">
+  <h2>실측 근거</h2>
+  <p class="note">2026-08-23, 캡처 22장을 PIL로 분석 — 색 빈도 팔레트 · 파란/흰/다크 덩어리의 위치·크기·라운드 · 글줄 높이. 로그 <code>00_reference/design-tokens/픽셀실측_2026-08-23.txt</code>. 라운드는 윗변 1px 아래 첫 채움점 거리(m)에서 r = m + √(2r−1) 보정, 글자는 한글 글리프 높이 ÷ 0.88.</p>
+  <div class="tbl"><table>
+    <tr><th>항목</th><th>8/17 추정</th><th>실측</th><th>결론</th></tr>
+    <tr><td>2차 버튼</td><td>아웃라인 #3668F6</td><td>틴트 채움 — 00 이체 #EBF0FF · 07 처리현황 #ECF0FE</td><td><strong>틴트로</strong></td></tr>
+    <tr><td>하단 CTA</td><td>r8만</td><td>07 시작시트 h56·r16 #005DF9 w353</td><td>인라인 48·8 / 하단 56·16 이원화</td></tr>
+    <tr><td>필터 칩</td><td class="num">36</td><td class="num">34</td><td>34</td></tr>
+    <tr><td>세그먼트</td><td>h52 r16</td><td>h48 r≈12</td><td>48 / 12</td></tr>
+    <tr><td>홈 카드 r</td><td>24 ?</td><td>24~26 (00·01 w369)</td><td>24</td></tr>
+    <tr><td>시트 상단 r</td><td>20</td><td>24</td><td>24</td></tr>
+    <tr><td>딤</td><td>검정 50%</td><td>#101828 ≈55% (흰 위 #6D7077)</td><td>남색 55%</td></tr>
+    <tr><td>07 랜딩 팔레트</td><td>—</td><td>#265BF0 · #111726 · #686F83</td><td>라이프 계열 — R-01 추가 근거</td></tr>
+    <tr><td>화면 제목</td><td class="num">24</td><td class="num">24 (01·02·07·1/5)</td><td>h1 24 — display 28은 06 상품명(≈30)만</td></tr>
+    <tr><td>섹션 제목 / 카드 제목 / 본문</td><td>20 / 18 / 16</td><td>19~20 / 18 / 16~17</td><td>확인</td></tr>
+    <tr><td>그리드 라벨</td><td class="num">16</td><td class="num">15</td><td>컴포넌트 14는 한 줄 맞춤 허용 오차</td></tr>
+    <tr><td>탭바</td><td>363×62</td><td>h63 · 선택 원 21~22 #005DF9</td><td>확인</td></tr>
+    <tr><td>02 카운트 숫자</td><td>primary</td><td>은행 탭 #3668F6 · 라이프 탭 #005DF9</td><td>서로 바뀜 — 혼재 사례</td></tr>
+  </table></div>
+  <footer>SOL:VE · 신한 슈퍼SOL 보험 탭 리디자인 · 8/25 회의 전까지 전부 가설 기반 시안. 이 문서는 <code>03_final-ui/디자인.md</code>와 같은 내용이며, 바뀌면 둘 다 고친다.</footer>
+</section>
+
+</main>
+</div>
