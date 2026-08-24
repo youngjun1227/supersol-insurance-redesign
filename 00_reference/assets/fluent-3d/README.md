@@ -49,3 +49,13 @@ Figma 컴포넌트 세트 `3D 일러스트 (Fluent)` **`292:3927`**. 섹션 `292
 `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/<이름>/3D/<소문자_밑줄>_3d.png`
 예: `assets/Tooth/3D/tooth_3d.png`. 전체 목록은 GitHub API 트리로 확인.
 **임의로 다른 3D 세트(3dicons·Iconscout 등)를 섞지 말 것** — 렌더 스타일이 달라 결이 갈린다.
+
+
+## 추가 (2026-08-25, 아이디어 4 재설계)
+| 파일 | Fluent 원본 | 쓰는 자리 |
+|---|---|---|
+| `반짝임.png` | Sparkles | S3-D 에이전트 이름 옆 (AI 뉘앙스) |
+| `로봇.png` | Robot | 예비 (아바타 대안 — 현재는 신한 심볼 사용) |
+| `물약원본.png` | Alembic | ❌ 폐기 — 삼발이·주둥이 때문에 실험 기구로 읽힘 |
+| `배터리_0/30/60/100.png` | **Battery에서 생성** — 위쪽 회색 페이드로 수위 4단계를 PIL로 구움. 빈 상태도 회색(경고 빨강 안 씀 — 실물 Low battery의 빨강은 의도적으로 배제) | 컴포넌트 `보장 배터리` `484:178` (S3-C·S3-D 전체) |
+Figma 3D 세트에 `Name=반짝임`(499:9368) · `Name=로봇`(499:9370) 추가 → 20종.
